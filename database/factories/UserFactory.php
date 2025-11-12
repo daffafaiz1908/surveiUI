@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use Faker\Factory as FakerFactory;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -17,15 +18,34 @@ class UserFactory extends Factory
     protected static ?string $password;
 
     /**
+     * Shared faker instance.
+     */
+    protected static $fakerInstance = null;
+
+    /**
+     * Get the faker instance.
+     */
+    protected function getFaker()
+    {
+        if (static::$fakerInstance === null) {
+            static::$fakerInstance = FakerFactory::create('id_ID');
+        }
+        return static::$fakerInstance;
+    }
+
+    /**
      * Define the model's default state.
      *
      * @return array<string, mixed>
      */
     public function definition(): array
     {
+        // Gunakan $this->faker jika tersedia, jika tidak gunakan instance yang di-share
+        $faker = $this->faker ?? $this->getFaker();
+        
         return [
-            'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
+            'name' => $faker->name(),
+            'email' => $faker->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'), // Password default: 'password'
             'remember_token' => Str::random(10),

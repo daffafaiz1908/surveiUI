@@ -19,7 +19,7 @@ class QuestionController extends Controller
             ->with('categoryRef')
             ->leftJoin('categories', 'categories.id', '=', 'questions.category_id')
             ->select('questions.*')
-            ->orderByRaw('COALESCE(categories.name, "") asc')
+            ->orderByRaw("COALESCE(categories.name, '') asc")
             ->orderByDesc('questions.created_at')
             ->paginate(10);
         return view('admin.questions.index', compact('questions'));
